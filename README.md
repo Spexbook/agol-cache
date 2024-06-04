@@ -1,5 +1,9 @@
 # ArcGIS Online Feature Service Layers to GeoJSON
 
+**Forked version by Steve Bennett**
+
+> This forked version supports passing a token as an argument, and also passing your own fetch function (which allows custom headers)
+
 ```bash
 npx agol-cache serviceURL TOKEN
 ```
@@ -20,19 +24,21 @@ const url = 'https://services1.arcgis.com/fBc8EJBxQRMcHlei/ArcGIS/rest/services/
 
 //can use async/aawit with layerByLayer: true
 
-cache.featureServiceToGeoJSON(url, { 
+cache.featureServiceToGeoJSON(url, {
   attachments: false, //whether or not to check the service for attachments
-  debug: false, //debugging is now on be default, which just means it writes to a log file, and the console logger is off if silent is set to false 
+  debug: false, //debugging is now on be default, which just means it writes to a log file, and the console logger is off if silent is set to false
   esriIdField: "", //field to use for the esriIdField, used in the query parameters, if NULL it is determined by the service response
   filter: "", //string to filter layer names
   folder: './geojson-cache', //folder to write the log file and geojson cache, relative to working directory or absolute path
   format: "json", //json or GeoJSON - json downloads the raw Esri JSON format then converts to GeoJSON (BETA), try this if using the GeoJSON endpoint fails
   layerByLayer: false, //use await on each layer, slower but helpful for debugging
   prefix: "test_", //prefix to add to the start of layer names
+  filename: "myfile.geojson", // override generated filename
   silent: true, //turn off viewing winston log messages and spinner "info" messages in the console
   timeout: 2000, //default is 5000, increase as needed
   token: null //token to use for secured routes, taken from .env TOKEN variable,
   steps: 1000 //number of features queried on each request
+  fetch: nodeFetch // pass in your own fetch function
 }, (layers) => {
   // console.log('output ' + layers.length + ' layers')
 });
@@ -99,7 +105,7 @@ getAllServices('https://sampleserver6.arcgisonline.com/arcgis/rest/services', co
  - now attempts to find the ``esriFieldTypeOID`` field from the service definition
  - shortened the code to just keep querying the service at 1000 feature intervals until no more features are returned
 
-### Version 0.5.0 
+### Version 0.5.0
  - added an option to add a token in an environment variable
  - fixed a bug where if the folder did not exist the script would error out
 
@@ -118,7 +124,7 @@ getAllServices('https://sampleserver6.arcgisonline.com/arcgis/rest/services', co
 ## Helpful Commands
 
 ```bash
-ogr2ogr -f GPKG outfile.gpkg infile.geojson 
+ogr2ogr -f GPKG outfile.gpkg infile.geojson
 ```
 
 ```bash
